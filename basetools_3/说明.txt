@@ -1,0 +1,2 @@
+全部采用随机采样，采样数为6000，不分重要参数和不重要参数
+原任务分类器每一个epoch都会更新，更新过程参考论文Transfer Learning based Search Space Design for Hyperparameter Tuning 的4.2节

@@ -21,6 +21,7 @@ import json
 from collections import *
 from utils import *
 import operator
+from tensorboardX import SummaryWriter
 # from tqdm import trange
 from sklearn.metrics import mean_absolute_error
 # from DeepPerf.mlp_sparse_model import *
@@ -318,6 +319,8 @@ class random_forest(object):
         origin_data = pd.read_csv(self.filename)
         unimportant_feature_sample_nums = self.confs['sample_params']['unimportant_feature_sample_nums']  # 初始不重要参数采样数量
         temp_data = pd.DataFrame(columns=origin_data.columns)  # 中间结果保存结果集
+
+        writer = SummaryWriter('runs/')
         # 迭代采样+与系统交互
         for i in range(self.confs['sample_params']['sample_epoch']):
             self.one_step_train(origin_data)
@@ -377,7 +380,7 @@ class random_forest(object):
             perf = eval(target_model_temp)
 
             # print(perf)
-
+            writer.add_scalar('loss', math.fabs(perf-predict[max_index]), global_step=i)
             print("第{}轮：真实最优参数为{},对应的性能值为{}".format(i + 1, top_one, perf))
             top_one[self.performance] = perf
 
