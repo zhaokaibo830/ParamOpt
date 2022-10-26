@@ -8,13 +8,32 @@
         "X2": ["float",[-10,10],0]
       }
   },
-  "alltasks":{
+
+ "sample_params": {
+    "important_feature_nums": 2,
+    "important_feature_sample_num": 3000,
+    "sample_step_change": 50,
+    "unimportant_feature_sample_nums":3000,
+    "sample_epoch": 50
+  },
+  "slected_k_source":3,
+  "sourcetask_num": 5,
+  "alpha_max": 0.8,
+  "alpha_min": 0.3,
+  "is_EI": 1,
+  "select_unimportant_parameter_samples": 1,
+  "candidate_supplement": 1,
+  "candidate_completion_threshold": 6000,
+  "sourcetasks_get_method": 1,
+
+
+  "sourcetasks":{
     "sourcetask_1":"1+0.2*X0* np.exp(-0.2*X0*0.2*X0-0.3*X1*0.3*X1)+0.0001*X2",
     "sourcetask_2":"0.2*(X0+0.1)* np.exp(-0.2*(X0+0.1)*0.2*(X0+0.1)-0.3*X1*0.3*X1)+0.0002*X2",
     "sourcetask_3":"0.2*(X0+5)* np.exp(-0.2*(X0+5)*0.2*(X0+5)-0.3*(X1+4)*0.3*(X1+4))+0.0003*X2",
     "sourcetask_4":"0.2*(X0+0.1)* np.exp(-0.2*(X0+0.1)*0.2*(X0+0.1)-0.3*(X1+0.1)*0.3*(X1+0.1))+0.0004*X2",
-    "sourcetask_5":"-5+0.2*X0* np.exp(-0.2*X0*0.2*X0-0.3*X1*0.3*X1)+0.0005*X2",
+    "sourcetask_5":"-5+0.2*X0* np.exp(-0.2*X0*0.2*X0-0.3*X1*0.3*X1)+0.0005*X2"
+  },
     "targettask": "0.2*X0* np.exp(-0.2*X0*0.2*X0-0.3*X1*0.3*X1)+0.0005*X2"
-  }
 }
 

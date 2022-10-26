@@ -2,7 +2,7 @@ import os
 import json
 import random
 import pandas as pd
-
+import numpy as np
 
 
 # 随机采样
@@ -26,7 +26,7 @@ def random_sample(selected_params, sample_num,target_model):
         x = samples[i]
         j=0
         while j<len(target_model_temp):
-            if target_model_temp[j]=="o":
+            if target_model_temp[j]=="X":
                 k=j+1
                 while k<len(target_model_temp) and target_model_temp[k].isdigit():
                     k=k+1
@@ -56,6 +56,8 @@ if __name__=="__main__":
     if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'taskdata')):
         os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)),'taskdata'))
     for task_name,target_model in all_tasks.items():
-        df_samples=random_sample(selected_params, 100, target_model)
+        df_samples=random_sample(selected_params, 50, target_model)
         temp_filename=temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'taskdata/{}.csv'.format(task_name))
         df_samples.to_csv(temp_filename, index=False)
+
+

@@ -1,0 +1,23 @@
+{
+  "common_params": {
+      "systerm": "redis",
+      "performance": "PERF_min",
+      "all_params": {
+        "X0": ["float",[-10,10],0],
+        "X1": ["float",[-10,10],0],
+        "X2": ["float",[-10,10],0]
+      }
+  },
+
+  "sample_params": {
+    "important_feature_nums": 3,
+    "important_feature_sample_num": 3000,
+    "sample_step_change": 50,
+    "unimportant_feature_sample_nums":3000,
+    "sample_epoch": 700
+
+  },
+    "targettask": "1+(1/4000)*(X0*X0+X1*X1+X2*X2)-np.cos(X0)*np.cos(np.sqrt(2)*X1/2)*np.cos(np.sqrt(3)*X2/3)"
+
+}
+

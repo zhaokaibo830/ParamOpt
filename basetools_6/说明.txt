@@ -1,3 +1,3 @@
 原任务分类器每一个epoch都会更新，更新过程参考论文Transfer Learning based Search Space Design for Hyperparameter Tuning 的4.2节
-重要特征每个epoch的采样步长递减，变为原来的0.98
-评估每一轮压缩后空间的大小
+把基础分类器采集函数改为EI，先在基础调优器观察EI对性能值的变化，把采样步长递减采样改成数量递增
+jiluxiang

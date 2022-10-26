@@ -1,0 +1,32 @@
+{
+  "common_params": {
+      "systerm": "redis",
+      "performance": "PERF_min",
+      "all_params": {
+        "X0": ["float",[-10,10],0],
+        "X1": ["float",[-10,10],0]
+      }
+  },
+
+ "sample_params": {
+    "important_feature_nums": 2,
+    "important_feature_sample_num": 3000,
+    "sample_step_change": 50,
+    "unimportant_feature_sample_nums":3000,
+    "sample_epoch": 10
+  },
+  "slected_k_source":3,
+  "sourcetask_num": 5,
+  "alpha_max": 0.8,
+  "alpha_min": 0.2,
+
+  "sourcetasks":{
+    "sourcetask_1":"X0*X0+X1*X1",
+    "sourcetask_2":"1+X0*X0+X1*X1",
+    "sourcetask_3":"2+X0*X0+X1*X1",
+    "sourcetask_4":"3+X0*X0+X1*X1",
+    "sourcetask_5":"4+X0*X0+X1*X1"
+  },
+    "targettask": "5+X0*X0+X1*X1"
+}
+
