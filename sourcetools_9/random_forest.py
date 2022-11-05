@@ -339,6 +339,8 @@ class random_forest(object):
         temp_data_real_perf_min = pd.DataFrame(columns=origin_data.columns)  # 真实中间结果保存结果集
         temp_data_forest_perf_min = pd.DataFrame(columns=origin_data.columns)  # 随机森林中间结果保存结果集
         eta = max(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else min(origin_data.iloc[:, -1].values) # eta是当前最优值
+        #  eta_index表示最小值获取的代数或者初始样本的位置，如果小于表示最小值是在初始样本得到的
+        eta_index=-np.argmax(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else -np.argmin(origin_data.iloc[:, -1].values)
         mre_sum = [0]  # mre_sum为前面所有轮次随机森林和真实性能的mre误差之和
         mre = [0]  # mre为每一轮随机森林和真实性能的mre误差
         selectd_important_features_save=[]
@@ -399,9 +401,13 @@ class random_forest(object):
 
             # 更新eta
             if self.min_or_max == 'max':
-                eta=max(eta,perf)
+                if eta < perf:
+                    eta_index = i + 1
+                eta = max(eta, perf)
             else:
-                eta=min(eta,perf)
+                if eta > perf:
+                    eta_index = i + 1
+                eta = min(eta, perf)
 
             # print("第{}轮：真实最优参数为{},对应的性能值为{}".format(i + 1, top_one, perf))
             top_one[self.performance] = perf
@@ -439,11 +445,12 @@ class random_forest(object):
             # self.test_test_data()
         np.savetxt(self.save_filesname + 'mre.txt', mre)
         np.savetxt(self.save_filesname + 'mre_sum.txt', mre_sum)
-        np.savetxt(self.save_filesname + 'optimal_value.txt', [eta])
+        with open(self.save_filesname + 'optimal_value.json', "w") as f:
+            json.dump({"index":str(eta_index),"opt_perf":float(eta)}, f)
         np.savetxt(self.save_filesname + 'selectd_important_features_save.txt', np.array(selectd_important_features_save),fmt="%s")
         temp_data_real_perf_min.to_csv(self.save_filesname+"temp_data_real_perf_min.csv", index=False)
         temp_data_forest_perf_min.to_csv(self.save_filesname + "temp_data_forest_perf_min.csv", index=False)
-        self.vis_tempfile(self.save_filesname + "temp_data_forest_perf_min.csv",self.save_filesname)
+        # self.vis_tempfile(self.save_filesname + "temp_data_forest_perf_min.csv",self.save_filesname)
 
     def get_sort_feature(self):
         """

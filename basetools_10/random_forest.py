@@ -444,6 +444,9 @@ class random_forest(object):
         temp_data_real_perf_min = pd.DataFrame(columns=origin_data.columns)  # 真实中间结果保存结果集
         temp_data_forest_perf_min = pd.DataFrame(columns=origin_data.columns)  # 随机森林中间结果保存结果集
         eta = max(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else min(origin_data.iloc[:, -1].values) # eta是当前最优值
+        #  eta_index表示最小值获取的代数或者初始样本的位置，如果小于表示最小值是在初始样本得到的
+        eta_index=-np.argmax(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else -np.argmin(origin_data.iloc[:, -1].values)
+
         every_epoch_remain_sample_num = []  # 每一轮剩余的样本数
         every_epoch_remain_sample_ratio=[]  # 每一轮剩余的样本数所占比例
         similarity_save = pd.DataFrame(columns=["sourcetask_"+str(i) for i in range(1,self.sourcetask_num+1)])  #相似度保存位置
@@ -526,12 +529,12 @@ class random_forest(object):
                     m += 1
                 if len(condenseed_sample_data.iloc[:,:].values)==0:
                     condenseed_sample_data_iszero_iter.append(i)
-                    condenseed_sample_data = sample_data.iloc[:2, :]
+                    condenseed_sample_data = sample_data.iloc[:, :]
 
 
 
             # 可视化分类器
-            self.vis_cls(self.selected_svm_index,self.svm_classifier, self.vis_cls_path, self.confs, i + 1, condenseed_sample_data, discard_data,self.similarity_list)
+            # self.vis_cls(self.selected_svm_index,self.svm_classifier, self.vis_cls_path, self.confs, i + 1, condenseed_sample_data, discard_data,self.similarity_list)
 
 
             if self.is_EI:
@@ -558,8 +561,12 @@ class random_forest(object):
 
             # 更新eta
             if self.min_or_max == 'max':
+                if eta < perf:
+                    eta_index = i + 1
                 eta = max(eta, perf)
             else:
+                if eta > perf:
+                    eta_index = i + 1
                 eta = min(eta, perf)
 
             # print("第{}轮：真实最优参数为{},对应的性能值为{}".format(i + 1, top_one, perf))
@@ -605,9 +612,10 @@ class random_forest(object):
         np.savetxt(self.save_filesname + 'mre.txt', mre)
         # np.savetxt(self.save_filesname + 'mre_sum.txt', mre_sum)
         np.savetxt(self.save_filesname + 'condenseed_sample_data_iszero_iter.txt', condenseed_sample_data_iszero_iter)
-        np.savetxt(self.save_filesname + 'optimal_value.txt', [eta])
+        with open(self.save_filesname + 'optimal_value.json', "w") as f:
+            json.dump({"index":str(eta_index),"opt_perf":float(eta)}, f)
         np.savetxt(self.save_filesname + 'selectd_important_features_save.txt',np.array(selectd_important_features_save), fmt="%s")
-        self.vis_tempfile(self.task_name,self.save_filesname+"temp_data_real_perf_min.csv",self.save_filesname)
+        # self.vis_tempfile(self.task_name,self.save_filesname+"temp_data_real_perf_min.csv",self.save_filesname)
 
 
     def source_train(self):
@@ -619,6 +627,8 @@ class random_forest(object):
         temp_data_real_perf_min = pd.DataFrame(columns=origin_data.columns)  # 真实中间结果保存结果集
         temp_data_forest_perf_min = pd.DataFrame(columns=origin_data.columns)  # 随机森林中间结果保存结果集
         eta = max(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else min(origin_data.iloc[:, -1].values) # eta是当前最优值
+        #  eta_index表示最小值获取的代数或者初始样本的位置，如果小于表示最小值是在初始样本得到的
+        eta_index=-np.argmax(origin_data.iloc[:, -1].values) if self.min_or_max == 'max'else -np.argmin(origin_data.iloc[:, -1].values)
         # mre_sum = [0]  # mre_sum为前面所有轮次随机森林和真实性能的mre误差之和
         # mre = [0]  # mre为每一轮随机森林和真实性能的mre误差
         selectd_important_features_save = []  # 保存每轮选择的重要参数
@@ -678,8 +688,12 @@ class random_forest(object):
 
             # 更新eta
             if self.min_or_max == 'max':
+                if eta <perf:
+                    eta_index=i+1
                 eta = max(eta, perf)
             else:
+                if eta > perf:
+                    eta_index=i+1
                 eta = min(eta, perf)
 
             # print(perf)
@@ -720,11 +734,12 @@ class random_forest(object):
             # writer.add_scalar('mre', mre[-1], global_step=i)
         # np.savetxt(self.save_filesname + 'mre.txt', mre)
         # np.savetxt(self.save_filesname + 'mre_sum.txt', mre_sum)
-        np.savetxt(self.save_filesname + 'optimal_value.txt', [eta])
+        with open(self.save_filesname + 'optimal_value.json', "w") as f:
+            json.dump({"index":str(eta_index),"opt_perf":float(eta)}, f)
         np.savetxt(self.save_filesname + 'selectd_important_features_save.txt',np.array(selectd_important_features_save), fmt="%s")
         temp_data_real_perf_min.to_csv(self.save_filesname + "temp_data_real_perf_min.csv", index=False)
         temp_data_forest_perf_min.to_csv(self.save_filesname + "temp_data_forest_perf_min.csv", index=False)
-        self.vis_tempfile(self.task_name,self.save_filesname + "temp_data_forest_perf_min.csv", self.save_filesname)
+        # self.vis_tempfile(self.task_name,self.save_filesname + "temp_data_forest_perf_min.csv", self.save_filesname)
 
     def get_sort_feature(self):
         """
@@ -925,23 +940,23 @@ class random_forest(object):
     def vis_cls(self,selected_svm_index, svm_classifier, vis_cls_path, confs, iter,condenseed_sample_data,discard_data,similarity_list):
         if not os.path.exists(os.path.join(vis_cls_path, 'iter_{}'.format(iter))):
             os.makedirs(os.path.join(vis_cls_path, 'iter_{}'.format(iter)))
-        x = np.linspace(-10,10,100)
-        y = np.linspace(-10,10,100)
+        x = np.linspace(-30,30,500)
+        y = np.linspace(-30,30,500)
         x,y=np.meshgrid(x, y)
         x1,y1=x.flatten(),y.flatten()
         condenseed_x,condenseed_y=condenseed_sample_data.iloc[:,0].values,condenseed_sample_data.iloc[:,1].values
         # discard_x,discard_y=discard_data.iloc[:,0].values,discard_data.iloc[:,1].values
         for i in range(len(svm_classifier)):
             z=self.task_f("sourcetask_{}".format(i+1),x,y)
-            contoues = plt.contour(x, y, z, 20, cmap='RdGy')
+            contoues = plt.contour(x, y, z, 100, cmap='RdGy')
             plt.clabel(contoues, inline=True, fontsize=8)
-            plt.imshow(z, extent=[-10, 10, -10, 10], origin='lower', cmap='RdGy', alpha=0.5)
+            plt.imshow(z, extent=[-30, 30, -30, 30], origin='lower', cmap='RdGy', alpha=0.5)
             plt.colorbar(label='contour')
             cls=svm_classifier[i]
-            zz=cls.predict(list(zip(x1,y1,[-1]*10000)))
+            zz=cls.predict(list(zip(x1,y1,[0]*250000,[0]*250000,[0]*250000,[0]*250000,[0]*250000,[0]*250000,[0]*250000,[0]*250000)))
             zz[0],zz[1]=1,0
-            z1=zz.reshape(100,100)
-            plt.imshow(z1, extent=[-10, 10, -10, 10], origin='lower',  alpha=0.4, cmap='Blues')
+            z1=zz.reshape(500,500)
+            plt.imshow(z1, extent=[-30, 30, -30, 30], origin='lower',  alpha=0.4, cmap='Blues')
             plt.colorbar(label='classifier')
             plt.scatter(condenseed_x,condenseed_y,marker='o',alpha=0.2, s=2,c="green",label="condensed-data")
             plt.legend(loc='upper left',shadow=True)
@@ -956,9 +971,9 @@ class random_forest(object):
                 plt.savefig(os.path.join(vis_cls_path, 'iter_{}/sourcetask_{}.png'.format(iter,i+1)))
             plt.close()
         z = self.task_f("targettask", x, y)
-        contoues = plt.contour(x, y, z, 20, cmap='RdGy')
+        contoues = plt.contour(x, y, z, 100, cmap='RdGy')
         plt.clabel(contoues, inline=True, fontsize=8)
-        plt.imshow(z, extent=[-10, 10, -10, 10], origin='lower', cmap='RdGy', alpha=0.5)
+        plt.imshow(z, extent=[-30, 30, -30, 30], origin='lower', cmap='RdGy', alpha=0.5)
         plt.colorbar(label='contour')
         plt.scatter(condenseed_x, condenseed_y, marker='o', alpha=0.2, s=2, c="green", label="condensed-data")
         plt.legend(loc='upper left',shadow=True)
@@ -970,7 +985,7 @@ class random_forest(object):
         plt.close()
 
 
-    def task_f(self,task_name, x, y):
+    def task_f(self,task_name, X0,X1,X2=0,X3=0,X4=0,X5=0,X6=0,X7=0,X8=0,X9=0):
         """
         任务函数
         :param task_name: 任务名称
@@ -979,27 +994,37 @@ class random_forest(object):
         :return:
         """
         if task_name=="sourcetask_1":
-            return 1+0.2*x* np.exp(-0.2*x*0.2*x-0.3*y*0.3*y)
+            return -20*np.exp(0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+20
         elif task_name=="sourcetask_2":
-            return 0.2 * (x + 0.1) * np.exp(-0.2 * (x + 0.1) * 0.2 * (x + 0.1) - 0.3 * y * 0.3 * y)
+            return -20*np.exp(0.3*np.sqrt(0.1*((X0+0.1)*(X0+0.1)+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*(X0+0.01))+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)
         elif task_name=="sourcetask_3":
-            return 0.2 * (x + 5) * np.exp(-0.2 * (x + 5) * 0.2 * (x + 5) - 0.3 * (y + 4) * 0.3 * (y + 4))
+            return -20*np.exp(0.6*np.sqrt(0.1*((X0+0.8)*(X0+0.8)+(X1+0.4)*(X1+0.4)+X2*X2+(X3+0.4)*(X3+0.4)+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*(X0+0.1))+np.cos(6.28*(X1+0.1))+np.cos(6.28*X2)+np.cos(6.28*(X3+0.1))+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)
         elif task_name=="sourcetask_4":
-            return 0.2 * (x + 0.1) * np.exp(-0.2 * (x + 0.1) * 0.2 * (x + 0.1) - 0.3 * (y + 0.1) * 0.3 * (y + 0.1))
+            return -30*np.exp(0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+2*X4*2*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*2*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+10
         elif task_name=="sourcetask_5":
-            return -5 + 0.2 * x * np.exp(-0.2 * x * 0.2 * x - 0.3 * y * 0.3 * y)
+            return -20*np.exp(5*np.sqrt(0.1*(X0*X0+0.0001*X1*0.0001*X1+X2*X2+X3*X3+X4*X4+(X5)*(X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*0.0001*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+10
+        elif task_name=="sourcetask_6":
+            return -40*np.exp(5*np.sqrt(0.1*(X0*X0+0.0001*X1*0.0001*X1+X2*X2+X3*X3+X4*X4+(X5)*(X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(10*X0)+np.cos(10*0.0001*X1)+np.cos(10*X2)+np.cos(10*X3)+np.cos(10*X4)+np.cos(10*X5)+np.cos(10*0.00002*X6)+np.cos(10*0.00003*X7)+np.cos(10*0.00004*X8)+np.cos(10*0.00005*X9)))+20+np.exp(1)+10
+        elif task_name=="sourcetask_7":
+            return -20*np.exp(0.3*np.sqrt(0.1*(0.01*X0*0.01*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.1*X5)*(0.1*X5)+(0.02*X6)*(0.02*X6)+(0.3*X7)*(0.3*X7)+(0.04*X8)*(0.4*X8)+(0.05*X9)*(0.05*X9))))-np.exp(0.1*(np.cos(6.28*0.01*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.01*X5)+np.cos(6.28*0.02*X6)+np.cos(6.28*0.03*X7)+np.cos(6.28*0.04*X8)+np.cos(6.28*0.05*X9)))+20+np.exp(1)
+        elif task_name=="sourcetask_8":
+            return -20*np.exp(0.3*np.sqrt(0.1*(0.01*X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.1*X5)*(0.1*X5)+(0.02*X6)*(0.02*X6)+(0.3*X7)*(0.3*X7)+(0.4*X8)*(0.04*X8)+(0.05*X9)*(0.05*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.01*X5)+np.cos(6.28*0.02*X6)+np.cos(6.28*0.03*X7)+np.cos(6.28*0.04*X8)+np.cos(6.28*0.05*X9)))+20+np.exp(1)
+        elif task_name=="sourcetask_9":
+            return -20*np.exp(0.3*np.sqrt(5*((X0+10)*(X0+10)+X1*X1+X2*X2+X3*X3+X4*X4+(1*X5)*(1*X5)+(2*X6)*(2*X6)+(3*X7)*(3*X7)+(4*X8)*(4*X8)+(5*X9)*(5*X9))))-np.exp(0.1*(np.cos(6.28*(X0+10))+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*1*X5)+np.cos(6.28*2*X6)+np.cos(6.28*3*X7)+np.cos(6.28*4*X8)+np.cos(6.28*5*X9)))+20+np.exp(1)
+        elif task_name=="sourcetask_10":
+            return -20*np.exp(0.3*np.sqrt(10*(3*X0*X0+(X1+5)*(X1+5)+X2*X2+5*X3*X3+X4*X4+(1*X5)*(1*X5)+(2*X6)*(2*X6)+(3*X7)*(3*X7)+(4*X8)*(4*X8)+(5*X9)*(5*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*(X1+5))+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*1*X5)+np.cos(6.28*2*X6)+np.cos(6.28*3*X7)+np.cos(6.28*4*X8)+np.cos(6.28*5*X9)))+20+np.exp(1)
         elif task_name=="targettask":
-            return 0.2 * x * np.exp(-0.2 * x * 0.2 * x - 0.3 * y * 0.3 * y)
+            return -20*np.exp(0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)
 
 
     def vis_tempfile(self, task_name, temp_save_path, save_filesname):
-        x = np.linspace(-10, 10, 100)
-        y = np.linspace(-10, 10, 100)
+        x = np.linspace(-30, 30, 500)
+        y = np.linspace(-30, 30, 500)
         x, y = np.meshgrid(x, y)
         z = self.task_f(task_name,x, y)
-        contoues = plt.contour(x, y, z, 20, cmap='RdGy')
+        contoues = plt.contour(x, y, z, 100, cmap='RdGy')
         plt.clabel(contoues, inline=True, fontsize=8)
-        plt.imshow(z, extent=[-10, 10, -10, 10], origin='lower', cmap='RdGy', alpha=0.5)
+        plt.imshow(z, extent=[-30, 30, -30, 30], origin='lower', cmap='RdGy', alpha=0.5)
         plt.colorbar(label='contour')
 
         temp=pd.read_csv(temp_save_path)
