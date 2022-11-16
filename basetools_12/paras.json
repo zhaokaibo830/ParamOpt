@@ -18,9 +18,9 @@
 
  "sample_params": {
     "important_feature_nums": 5,
-    "important_feature_sample_num": 7000,
+    "important_feature_sample_num": 5000,
     "sample_step_change": 200,
-    "unimportant_feature_sample_nums":7000,
+    "unimportant_feature_sample_nums":5000,
     "sample_epoch": 100
   },
   "slected_k_source":5,
@@ -30,7 +30,7 @@
   "is_EI": 1,
   "select_unimportant_parameter_samples": 1,
   "candidate_supplement": 3,
-  "candidate_completion_threshold": 10000,
+  "candidate_completion_threshold": 8000,
   "sourcetasks_get_method": 0,
 
 
