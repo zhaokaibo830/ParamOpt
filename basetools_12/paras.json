@@ -21,7 +21,7 @@
     "important_feature_sample_num": 5000,
     "sample_step_change": 200,
     "unimportant_feature_sample_nums":5000,
-    "sample_epoch": 100
+    "sample_epoch": 2
   },
   "slected_k_source":5,
   "sourcetask_num": 10,

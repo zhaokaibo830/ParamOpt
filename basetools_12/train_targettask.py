@@ -8,11 +8,11 @@ from tqdm import tqdm
 if __name__ == '__main__':
     confs = json.load(open('paras.json'), strict=False)
     # 原任务训练
-    # print("原任务开始训练：")
-    # for task_name, target_model in tqdm(confs["sourcetasks"].items()):
-    #     # print(task_name,target_model)
-    #     model = random_forest("source", task_name, target_model)
-    #     model.source_train()
+    print("原任务开始训练：")
+    for task_name, target_model in tqdm(confs["sourcetasks"].items()):
+        # print(task_name,target_model)
+        model = random_forest("source", task_name, target_model)
+        model.source_train()
 
     # 目标任务训练
     print("目标任务开始训练：")
