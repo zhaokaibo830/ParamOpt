@@ -15,7 +15,7 @@ def get_performance(params):
 
     headers = {"user-agent": "Mizilla/5.0"}
     value = parse.urlencode(params)
-    # print(value)
+    print(value)
     # data_ = value.encode('utf-8')
     # print(data_)
     # return -1
@@ -32,11 +32,12 @@ def get_performance(params):
     # url_ = 'http://47.104.101.50:8081/jmeter'
     while True:
         try:
-            # print(data_)
+            print(111111)
             f = request.urlopen(req1, timeout=360)
-
+            print(2222222)
             # print(f)
             Data = f.read()
+            print(Data)
             data = Data.decode('utf-8')
             if data == "error":
                 print("查不到，报errror，重新尝试\n")
@@ -91,12 +92,11 @@ def random_sample(selected_params, sample_num):
         samples[i].append(0)
 
     df_samples = pd.DataFrame(samples, columns=list(selected_params.keys()) + ["PERF"])
-
     for i in range(len(samples)):
         top_one = dict(df_samples.iloc[i, :-1])
         value=get_performance(top_one)
-        df_samples.iloc[i][-1]=value
-    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/{sourcetask_1}.csv')
+        df_samples.iloc[i,-1]=value
+    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_Workcount_32.csv')
     df_samples.to_csv(temp_filename, index=False)
 
 if __name__=="__main__":

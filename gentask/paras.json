@@ -4,7 +4,7 @@
       "performance": "PERF_min",
       "all_params": {
         "executorCores": ["int",[1,16],1],
-        "executorMemory": ["int",[5,43],1024],
+        "executorMemory": ["int",[1024,44032],1024],
         "executorInstances": ["int",[8,48],2],
         "defaultParallelism": ["int",[8,50],8],
         "memoryOffHeapEnabled": ["enum",["true","false"],"false"],
@@ -19,8 +19,8 @@
         "speculationMultiplier": ["float",[1,5],1.5],
         "speculationQuantile": ["float",[0,1],0.75],
         "broadcastBlockSize": ["int",[2,128],4],
-        "ioCompressionCodec": ["enum",["snappy","lzf","lz4"],"lz4"],
-        "ioCompressionLz4BlockSize": ["int",[32,128],64],
+        "ioCompressionCodec": ["enum",["lzf","lz4"],"lz4"],
+        "ioCompressionLz4BlockSize": ["int",[64,128],64],
         "ioCompressionSnappyBlockSize": ["int",[2,128],32],
         "kryoRederenceTracking": ["enum",["true","false"],"true"],
         "kryoserializerBufferMax": ["int",[8,128],64],
@@ -34,19 +34,6 @@
         "rddCompress": ["enum",["true","false"],"false"],
         "serializer": ["enum",["org.apache.spark.serializer.JavaSerializer","org.apache.spark.serializer.KryoSerializer"],"org.apache.spark.serializer.JavaSerializer"]
       }
-  },
-  "alltasks":{
-    "sourcetask_1":"-20*np.exp(-0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+20",
-    "sourcetask_2":"-20*np.exp(-0.3*np.sqrt(0.1*((X0+0.1)*(X0+0.1)+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*(X0+0.01))+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)",
-    "sourcetask_3":"-20*np.exp(-0.6*np.sqrt(0.1*((X0+0.8)*(X0+0.8)+(X1+0.4)*(X1+0.4)+X2*X2+(X3+0.4)*(X3+0.4)+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*(X0+0.1))+np.cos(6.28*(X1+0.1))+np.cos(6.28*X2)+np.cos(6.28*(X3+0.1))+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)",
-    "sourcetask_4":"-30*np.exp(-0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+2*X4*2*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*2*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+10",
-    "sourcetask_5":"-20*np.exp(-5*np.sqrt(0.1*(X0*X0+0.0001*X1*0.0001*X1+X2*X2+X3*X3+X4*X4+(X5)*(X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*0.0001*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)+10",
-    "sourcetask_6":"-40*np.exp(-5*np.sqrt(0.1*(X0*X0+0.0001*X1*0.0001*X1+X2*X2+X3*X3+X4*X4+(X5)*(X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(10*X0)+np.cos(10*0.0001*X1)+np.cos(10*X2)+np.cos(10*X3)+np.cos(10*X4)+np.cos(10*X5)+np.cos(10*0.00002*X6)+np.cos(10*0.00003*X7)+np.cos(10*0.00004*X8)+np.cos(10*0.00005*X9)))+20+np.exp(1)+10",
-    "sourcetask_7":"-20*np.exp(-0.3*np.sqrt(0.1*(0.01*X0*0.01*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.1*X5)*(0.1*X5)+(0.02*X6)*(0.02*X6)+(0.3*X7)*(0.3*X7)+(0.04*X8)*(0.4*X8)+(0.05*X9)*(0.05*X9))))-np.exp(0.1*(np.cos(6.28*0.01*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.01*X5)+np.cos(6.28*0.02*X6)+np.cos(6.28*0.03*X7)+np.cos(6.28*0.04*X8)+np.cos(6.28*0.05*X9)))+20+np.exp(1)",
-    "sourcetask_8":"-20*np.exp(-0.3*np.sqrt(0.1*(0.01*X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.1*X5)*(0.1*X5)+(0.02*X6)*(0.02*X6)+(0.3*X7)*(0.3*X7)+(0.4*X8)*(0.04*X8)+(0.05*X9)*(0.05*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.01*X5)+np.cos(6.28*0.02*X6)+np.cos(6.28*0.03*X7)+np.cos(6.28*0.04*X8)+np.cos(6.28*0.05*X9)))+20+np.exp(1)",
-    "sourcetask_9":"-20*np.exp(-0.3*np.sqrt(5*((X0+10)*(X0+10)+X1*X1+X2*X2+X3*X3+X4*X4+(1*X5)*(1*X5)+(2*X6)*(2*X6)+(3*X7)*(3*X7)+(4*X8)*(4*X8)+(5*X9)*(5*X9))))-np.exp(0.1*(np.cos(6.28*(X0+10))+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*1*X5)+np.cos(6.28*2*X6)+np.cos(6.28*3*X7)+np.cos(6.28*4*X8)+np.cos(6.28*5*X9)))+20+np.exp(1)",
-    "sourcetask_10":"-20*np.exp(-0.3*np.sqrt(10*(3*X0*X0+(X1+5)*(X1+5)+X2*X2+5*X3*X3+X4*X4+(1*X5)*(1*X5)+(2*X6)*(2*X6)+(3*X7)*(3*X7)+(4*X8)*(4*X8)+(5*X9)*(5*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*(X1+5))+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*1*X5)+np.cos(6.28*2*X6)+np.cos(6.28*3*X7)+np.cos(6.28*4*X8)+np.cos(6.28*5*X9)))+20+np.exp(1)",
-    "targettask": "-20*np.exp(-0.2*np.sqrt(0.1*(X0*X0+X1*X1+X2*X2+X3*X3+X4*X4+(0.00001*X5)*(0.00001*X5)+(0.00002*X6)*(0.00002*X6)+(0.00003*X7)*(0.00003*X7)+(0.00004*X8)*(0.00004*X8)+(0.00005*X9)*(0.00005*X9))))-np.exp(0.1*(np.cos(6.28*X0)+np.cos(6.28*X1)+np.cos(6.28*X2)+np.cos(6.28*X3)+np.cos(6.28*X4)+np.cos(6.28*0.00001*X5)+np.cos(6.28*0.00002*X6)+np.cos(6.28*0.00003*X7)+np.cos(6.28*0.00004*X8)+np.cos(6.28*0.00005*X9)))+20+np.exp(1)"
   }
 }
 

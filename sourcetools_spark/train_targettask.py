@@ -5,5 +5,5 @@ if __name__ == '__main__':
 
     # 训练
     confs = json.load(open('paras.json'), strict=False)
-    model = random_forest("targettask",confs["targettask"])
+    model = random_forest("sourcetask_Workcount_32",confs["targettask"])
     model.target_train()

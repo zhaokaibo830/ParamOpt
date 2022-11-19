@@ -119,23 +119,26 @@ class random_forest(object):
         # 首先处理没有优先关系的enum参数，即string参数
         char = []  # enum的列名称
         enum_index = []  # enum的原始列索引
-        for name in columns[:-1]:
+        for name in columns:
             if self.selected_params[name][0] == 'string' or self.selected_params[name][0] == 'enum':
                 char.append(name)
                 enum_index.append(columns.index(name))
 
         enum_number = []  # 每个enum参数对应的独热编码的长度
         enum_book = {}  # 每个enum参数的内容，字典形式存储
+
         m = 0
         for c in char:
             i = enum_index[m]
 
             new_data = pd.DataFrame({c: self.selected_params[c][1]})  # 添加几行，为了更好全面编码
             data = data.append(new_data, ignore_index=True)
-
-            enum_book[c] = list(pd.get_dummies(data[c]).columns)
+            # print(data.values.shape)
+            # enum_book[c] = list(pd.get_dummies(data[c]).columns)
+            # print(data[c])
             enum_data = pd.get_dummies(data[c], prefix=c)  # 独热编码后的变量
-
+            enum_book[c] = list(enum_data.columns)
+            # print(enum_data.columns)
             data = data.drop(c, 1)
 
             enum_list = list(enum_data.columns)
@@ -149,7 +152,7 @@ class random_forest(object):
             data.drop(data.index[-len(self.selected_params[c][1]):], inplace=True)  # 删除前3行
             # print(enum_index)
         # print(enum_number)
-        # print(data)
+
         # print(enum_book)
         self.fake_columns = list(data.columns)
 
@@ -312,15 +315,14 @@ class random_forest(object):
         # data_x = data.iloc[:, :-1].values
         # self.fake_columns = list(data.iloc[:, :-1].columns)
         data_x, enum_number, enum_book = self.data_in(data)
+        # print("data_X")
+        # print(data_x)
 
         # print("data_y")
         # print(data_y)
-
         # 标准化
         self.scalar = StandardScaler()
         data_x = self.scalar.fit_transform(data_x.astype(float))
-        # print("data_x")
-        # print(data_x.values)
 
         # 随机森林训练
         self.model = RandomForestRegressor()
@@ -332,7 +334,39 @@ class random_forest(object):
 
     def target_train(self):
 
-        origin_data = pd.read_csv(self.filename)
+        data_type={"executorCores": int,
+        "executorMemory": int,
+        "executorInstances": int,
+        "defaultParallelism": int,
+        "memoryOffHeapEnabled": str,
+        "memoryOffHeapSize": int,
+        "memoryFraction": float,
+        "memoryStorageFraction": float,
+        "shuffleFileBuffer":int,
+        "speculation": str,
+        "reducerMaxSizeInFlight": int,
+        "shuffleSortBypassMerageThreshold": int,
+        "speculationInterval": int,
+        "speculationMultiplier": float,
+        "speculationQuantile": float,
+        "broadcastBlockSize": int,
+        "ioCompressionCodec": str,
+        "ioCompressionLz4BlockSize": int,
+        "ioCompressionSnappyBlockSize": int,
+        "kryoRederenceTracking": str,
+        "kryoserializerBufferMax": int,
+        "kryoserializerBuffer": int,
+        "storageMemoryMapThreshold": int,
+        "networkTimeout": int,
+        "localityWait": int,
+        "shuffleCompress": str,
+        "shuffleSpillCompress": str,
+        "broadcastCompress": str,
+        "rddCompress": str,
+        "serializer": str}
+
+
+        origin_data = pd.read_csv(self.filename,dtype=data_type)
         unimportant_feature_sample_nums = self.confs['sample_params']['unimportant_feature_sample_nums']  # 初始不重要参数采样数量
         important_feature_sample_num=self.confs['sample_params']['important_feature_sample_num'] # 初始重要参数采样数量
         sample_step_change=self.confs['sample_params']['sample_step_change']  #  每步重要参数采样增加个数
@@ -416,13 +450,6 @@ class random_forest(object):
             one_data = pd.DataFrame([top_one])
             origin_data = pd.concat([origin_data, one_data[list(origin_data.columns)]], axis=0)
             origin_data = origin_data.reset_index(drop=True)
-            # 合并保存真实中间接系统或者代理模型的结果
-            temp_data_real_perf_min = pd.concat([temp_data_real_perf_min, one_data], axis=0)
-
-            top_one[self.performance] = self.model.predict([sample_data.iloc[max_index, :]])[0]
-            one_data = pd.DataFrame([top_one])
-            # 合并保存中间接系统或者代理模型的结果
-            temp_data_forest_perf_min = pd.concat([temp_data_forest_perf_min, one_data], axis=0)
 
             # 计算mre
             # mre_sum.append(
@@ -439,7 +466,6 @@ class random_forest(object):
                 -math.pow(max(0, i - 20), 2) / (2 * theta * theta)))
 
             # print(perf)
-            writer.add_scalar('perf_min_forest', self.model.predict([sample_data.iloc[max_index, :]])[0], global_step=i)
             writer.add_scalar('perf_min', perf, global_step=i)
             # writer.add_scalar('mre', mre[-1], global_step=i)
             # self.test_test_data()
@@ -449,7 +475,7 @@ class random_forest(object):
             json.dump({"index":str(eta_index),"opt_perf":float(eta)}, f)
         np.savetxt(self.save_filesname + 'selectd_important_features_save.txt', np.array(selectd_important_features_save),fmt="%s")
         temp_data_real_perf_min.to_csv(self.save_filesname+"temp_data_real_perf_min.csv", index=False)
-        temp_data_forest_perf_min.to_csv(self.save_filesname + "temp_data_forest_perf_min.csv", index=False)
+        # temp_data_forest_perf_min.to_csv(self.save_filesname + "temp_data_forest_perf_min.csv", index=False)
         # self.vis_tempfile(self.save_filesname + "temp_data_forest_perf_min.csv",self.save_filesname)
 
     def get_sort_feature(self):
@@ -515,11 +541,12 @@ class random_forest(object):
         """
         sample_data[self.performance] = 0
         data, _, _ = self.data_in(sample_data)
-        data = self.scalar.transform(data)
+        self.scalar=StandardScaler()
+        data = self.scalar.fit_transform(data.astype(float))
 
         pred = []
         for e in model.estimators_:
-            pred.append(e.predict(data.values))
+            pred.append(e.predict(data))
         pred = np.array(pred).transpose(1, 0)
         m = np.mean(pred, axis=1)
         s = np.std(pred, axis=1)
