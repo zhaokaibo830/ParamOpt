@@ -26,7 +26,7 @@ def get_performance(params):
     # http://47.104.101.50:9090/experiment/redis?     cassandra
     # http://47.104.101.50:8088/x264/exec?  x264
     # http://47.104.101.50:8081/jmeter?  tomcat
-    req1 = request.Request('http://192.168.0.168:9002/api/spark/runBayesForTime?%s' % value, headers=headers)  # 这样就能把参数带过去了
+    req1 = request.Request('http://192.168.0.168:9002/api/spark/runSortForTime?%s' % value, headers=headers)  # 这样就能把参数带过去了
     # print('http://192.168.0.168:9002/api/spark/runWordcountForTime?%s' % value)
     # 下面是获得响应
     i = 0
@@ -75,60 +75,49 @@ def get_performance(params):
     return (float)(data)
 
 # 随机采样
-def get_sample(path, sample_num):
+def random_sample(selected_params, sample_num):
     """
     对不太重要的参数进行随机采样
     :param selected_params: selected_params字典形式
     :param sample_num: 采样数量
     :return: 采样结果
     """
-    data_type = {"executorCores": int,
-                 "executorMemory": int,
-                 "executorInstances": int,
-                 "defaultParallelism": int,
-                 "memoryOffHeapEnabled": str,
-                 "memoryOffHeapSize": int,
-                 "memoryFraction": float,
-                 "memoryStorageFraction": float,
-                 "shuffleFileBuffer": int,
-                 "speculation": str,
-                 "reducerMaxSizeInFlight": int,
-                 "shuffleSortBypassMerageThreshold": int,
-                 "speculationInterval": int,
-                 "speculationMultiplier": float,
-                 "speculationQuantile": float,
-                 "broadcastBlockSize": int,
-                 "ioCompressionCodec": str,
-                 "ioCompressionLz4BlockSize": int,
-                 "ioCompressionSnappyBlockSize": int,
-                 "kryoRederenceTracking": str,
-                 "kryoserializerBufferMax": int,
-                 "kryoserializerBuffer": int,
-                 "storageMemoryMapThreshold": int,
-                 "networkTimeout": int,
-                 "localityWait": int,
-                 "shuffleCompress": str,
-                 "shuffleSpillCompress": str,
-                 "broadcastCompress": str,
-                 "rddCompress": str,
-                 "serializer": str}
 
-    df_samples=pd.read_csv(path,dtype=data_type)
-    print(df_samples.iloc[0,:])
-    for i in trange(len(df_samples.values)):
+    # 随机采样开始
+    samples = []
+    for _ in range(sample_num):
+        samples.append([])
+    for key in selected_params.keys():
+        if selected_params[key][0] == 'int':
+            for i in range(sample_num):
+                samples[i].append(random.randint(selected_params[key][1][0] + 1, selected_params[key][1][1]))
+        elif selected_params[key][0] == 'float':
+            for i in range(sample_num):
+                samples[i].append(random.uniform(selected_params[key][1][0] + 0.1, selected_params[key][1][1]))
+        elif selected_params[key][0] == 'enum':
+            for i in range(sample_num):
+                samples[i].append(random.choice(selected_params[key][1]))
+        else:
+            continue
+
+    for i in range(sample_num):
+        samples[i].append(0)
+
+    df_samples = pd.DataFrame(samples, columns=list(selected_params.keys()) + ["PERF"])
+    for i in trange(len(samples)):
         top_one = dict(df_samples.iloc[i, :-1])
         value=get_performance(top_one)
         df_samples.iloc[i,-1]=value
-    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_bayes_0dot5.csv')
+    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_sort_10.csv')
     df_samples.to_csv(temp_filename, index=False)
 
 if __name__=="__main__":
-
+    confs = json.load(open('paras.json'), strict=False)
+    selected_params = confs['common_params']['all_params']
     if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)),'taskdata')):
         os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)),'taskdata'))
-    # print(os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)),'spark_data'),"sourcetask_Workcount_32.csv"))
 
-    get_sample(os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)),'spark_data'),"sourcetask_sort_10.csv"), 50)
+    random_sample(selected_params, 50)
 
 
 

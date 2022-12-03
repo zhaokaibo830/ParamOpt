@@ -34,6 +34,18 @@
         "rddCompress": ["enum",["true","false"],"false"],
         "serializer": ["enum",["org.apache.spark.serializer.JavaSerializer","org.apache.spark.serializer.KryoSerializer"],"org.apache.spark.serializer.JavaSerializer"]
       }
-  }
+  },
+
+  "sample_params": {
+    "important_feature_nums": 10,
+    "important_feature_sample_num": 5000,
+    "sample_step_change": 200,
+    "unimportant_feature_sample_nums":5000,
+    "sample_epoch": 100
+
+  },
+    "is_EI": 1,
+    "select_unimportant_parameter_samples": 1,
+    "targettask":""
 }
 
