@@ -119,7 +119,7 @@ def get_sample(path, sample_num):
         top_one = dict(df_samples.iloc[i, :-1])
         value=get_performance(top_one)
         df_samples.iloc[i,-1]=value
-    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_terasort_7.csv')
+    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_sort_12.csv')
     df_samples.to_csv(temp_filename, index=False)
 
 if __name__=="__main__":

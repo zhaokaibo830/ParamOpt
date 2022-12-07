@@ -1153,7 +1153,7 @@ class random_forest(object):
 
     def get_two_point_min_distance(self, candidate_data_temp):
         zuhe=np.triu_indices(len(candidate_data_temp), 1)
-        min_distance_list=0
+        min_distance_list=float("inf")
         for j in range(len(list(zuhe[0]))):
             min_distance_list=min(min_distance_list,np.linalg.norm(candidate_data_temp[zuhe[0][j]]-candidate_data_temp[zuhe[1][j]]))
         return min_distance_list

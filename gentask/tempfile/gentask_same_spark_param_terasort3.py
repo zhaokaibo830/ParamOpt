@@ -26,7 +26,7 @@ def get_performance(params):
     # http://47.104.101.50:9090/experiment/redis?     cassandra
     # http://47.104.101.50:8088/x264/exec?  x264
     # http://47.104.101.50:8081/jmeter?  tomcat
-    req1 = request.Request('http://192.168.0.168:9002/api/spark/runSortForTime?%s' % value, headers=headers)  # 这样就能把参数带过去了
+    req1 = request.Request('http://192.168.0.168:9002/api/spark/runTerasortForTime?%s' % value, headers=headers)  # 这样就能把参数带过去了
     # print('http://192.168.0.168:9002/api/spark/runWordcountForTime?%s' % value)
     # 下面是获得响应
     i = 0
@@ -119,7 +119,7 @@ def get_sample(path, sample_num):
         top_one = dict(df_samples.iloc[i, :-1])
         value=get_performance(top_one)
         df_samples.iloc[i,-1]=value
-    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_terasort_7.csv')
+    temp_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'taskdata/sourcetask_terasort_3.csv')
     df_samples.to_csv(temp_filename, index=False)
 
 if __name__=="__main__":

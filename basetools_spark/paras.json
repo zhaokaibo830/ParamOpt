@@ -1,0 +1,56 @@
+{
+  "common_params": {
+      "systerm": "spark",
+      "performance": "PERF_min",
+      "all_params": {
+        "executorCores": ["int",[1,16],1],
+        "executorMemory": ["int",[25600,44032],25600],
+        "executorInstances": ["int",[8,48],8],
+        "defaultParallelism": ["int",[8,50],8],
+        "memoryOffHeapEnabled": ["enum",["true","false"],"false"],
+        "memoryOffHeapSize": ["int",[10,100],10],
+        "memoryFraction": ["float",[0.5,1],0.6],
+        "memoryStorageFraction": ["float",[0.5,1],0.5],
+        "shuffleFileBuffer": ["int",[2,128],32],
+        "speculation": ["enum",["true","false"],"false"],
+        "reducerMaxSizeInFlight": ["int",[2,128],48],
+        "shuffleSortBypassMerageThreshold": ["int",[100,1000],200],
+        "speculationInterval": ["int",[10,100],100],
+        "speculationMultiplier": ["float",[1,5],1.5],
+        "speculationQuantile": ["float",[0,1],0.75],
+        "broadcastBlockSize": ["int",[2,128],4],
+        "ioCompressionCodec": ["enum",["lzf","lz4"],"lz4"],
+        "ioCompressionLz4BlockSize": ["int",[64,128],64],
+        "ioCompressionSnappyBlockSize": ["int",[2,128],32],
+        "kryoRederenceTracking": ["enum",["true","false"],"true"],
+        "kryoserializerBufferMax": ["int",[8,128],64],
+        "kryoserializerBuffer": ["int",[2,128],64],
+        "storageMemoryMapThreshold": ["int",[50,500],50],
+        "networkTimeout": ["int",[20,500],120],
+        "localityWait": ["int",[1,10],3],
+        "shuffleCompress": ["enum",["true","false"],"true"],
+        "shuffleSpillCompress": ["enum",["true","false"],"true"],
+        "broadcastCompress": ["enum",["true","false"],"true"],
+        "rddCompress": ["enum",["true","false"],"false"],
+        "serializer": ["enum",["org.apache.spark.serializer.JavaSerializer","org.apache.spark.serializer.KryoSerializer"],"org.apache.spark.serializer.JavaSerializer"]
+      }
+  },
+
+  "sample_params": {
+    "important_feature_nums": 5,
+    "important_feature_sample_num": 5000,
+    "sample_step_change": 200,
+    "unimportant_feature_sample_nums":5000,
+    "sample_epoch": 100
+  },
+  "slected_k_source":5,
+  "sourcetask_num": 11,
+  "alpha_max": 0.9,
+  "alpha_min": 0.3,
+  "is_EI": 1,
+  "select_unimportant_parameter_samples": 1,
+  "candidate_supplement": 3,
+  "candidate_completion_threshold": 8000,
+  "sourcetasks_get_method": 0
+}
+
